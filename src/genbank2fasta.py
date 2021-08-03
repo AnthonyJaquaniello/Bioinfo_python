@@ -7,6 +7,7 @@ def genbank_reader(genbank_file):
         genbank_id = ''
         genbank_dict = {}
         is_seq = False
+        assert genbank_file.split('.')[1] in ['fasta', 'faa', 'fna'], "Incorrect input file extension. See genbank2fasta.py --help"
         for line in filin:
             if line[0:9] == 'ACCESSION':
                 genbank_id = line.split()[1]
@@ -19,6 +20,7 @@ def genbank_reader(genbank_file):
             if is_seq:
                 cleaned_line = re.sub(pattern='[0-9]', repl='', string=line.strip()).replace(' ', '').upper()
                 genbank_dict[genbank_id] += cleaned_line
+        assert len(genbank_id) > 0, "Incorrect format for input file, missing 'ACCESSION' field."
         return genbank_dict
 
 def genbank2fasta(input_genbank, output_fasta='genbank2fasta.fasta'):
@@ -31,7 +33,7 @@ def genbank2fasta(input_genbank, output_fasta='genbank2fasta.fasta'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--genbank", help='Genbank input file to convert')
-    parser.add_argument("-o", "--fasta", help='Fasta output file')
+    parser.add_argument("-o", "--fasta", help='Fasta output file (valid extensions: .fasta, .faa, .fna)')
     args = parser.parse_args()
     if args.fasta:
         print(f"\nConverting your genbank file into {args.fasta} file...")
